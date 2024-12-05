@@ -1,8 +1,6 @@
 #Input the sequences, will add function to parse the input and make sure that only ATCGU are in the sequence
-seq1 = str(input('Input sequence 1: '))
-seq1 = seq1.upper()
-seq2 = str(input('Input sequence 2: '))
-seq2 = seq2.upper()
+seq1 = str(input('Input sequence 1: ')).upper()
+seq2 = str(input('Input sequence 2: ')).upper()
 
 ##Function to make a matrix of zeros
 def zeros(rows, cols):
@@ -63,11 +61,11 @@ def NeedlemanWunsch(seq1, seq2):
             #Calculating the score by checking the top, the left, and the diagonal squares
             
             match = scoreMatrix[i - 1][j - 1] + matchScore(seq1[j-1], seq2[i-1])
-            insertGap = scoreMatrix[i - 1][j] + gap
-            misDelete = scoreMatrix[i][j - 1] + gap
+            delete = scoreMatrix[i - 1][j] + gap
+            insert = scoreMatrix[i][j - 1] + gap
 
             #Now going to recording the maximum score from the three possibilities calculated
-            scoreMatrix[i][j] = max(match, insertGap, misDelete)
+            scoreMatrix[i][j] = max(match, delete, insert)
     #return scoreMatrix
 
     #Traceback from Wikipedia pseudocode
@@ -92,15 +90,15 @@ def NeedlemanWunsch(seq1, seq2):
             i -= 1 #move forward
             j -= 1
         
-        elif scoreMatrix[i][j] == scoreMatrix[i - 1][j] + gap:
+        elif scoreMatrix[i][j] == scoreMatrix[i ][j - 1] + gap:
             alignA += seq1[j - 1]
             alignB += '-'
-            i -= 1
+            j -= 1
         
-        else: #scoreMatrix[i][j] == scoreMatrix[i][j - 1] + gap:
+        elif scoreMatrix[i][j] == scoreMatrix[i - 1][j] + gap:
             alignA += '-'
             alignB += seq2[i - 1]
-            j -= 1
+            i -= 1
         
     while j > 0:
         alignA += seq1[j-1]
@@ -111,7 +109,7 @@ def NeedlemanWunsch(seq1, seq2):
         alignA += '-'
         alignB += seq2[i-1]
         i -= 1
-
+        #Matrix was traversed backwards to we need to make the sequences in forward direction again
     alignA = alignA[::-1]
     alignB = alignB[::-1]
 
