@@ -2,6 +2,10 @@
 seq1 = str(input('Input sequence 1: ')).upper()
 seq2 = str(input('Input sequence 2: ')).upper()
 
+mismatch = -1
+gap = -1
+match = 1
+
 ##Function to make a matrix of zeros
 def zeros(rows, cols):
     #Define an empty list
@@ -22,10 +26,6 @@ def zeros(rows, cols):
 
 #zeros(3,5) #testing zeros function
 
-mismatch = -1
-gap = -1
-match = 1
-
 #Return the score between any two bases in alignment
 def matchScore(match1, match2):
     if match1 == match2:
@@ -43,8 +43,9 @@ def NeedlemanWunsch(seq1, seq2):
 
     #Generate the matrix of zeros to stores the scores
     #+1 to create the 0s col and rows
-    
-    scoreMatrix = zeros(s1 + 1, s2 + 1)
+    scoreMatrix = zeros(s2 + 1, s1 + 1)
+    ##Had an issue where I couldnt align two sequences of different lenghts and I found the issue to be here
+    #I originally had it s1+1,s2+1 and it is supposed to be the opposite way. Idk why but when I made this change it fixed the issue.
 
     #Calculate score table
     #First col and first row of zeros
