@@ -1,30 +1,25 @@
 #Input the sequences, will add function to parse the input and make sure that only ATCGU are in the sequence
-seq1 = str(input('Input sequence 1: '))
-seq1 = seq1.upper()
-seq2 = str(input('Input sequence 2: '))
-seq2 = seq2.upper()
+'''
+seq1 = str(input('Input sequence 1: ')).upper()
+seq2 = str(input('Input sequence 2: ')).upper()
+'''
+##Now I will add the code to import two files and read the fasta file and store that seq in a variable
+'''currently using two test files and not the BRCA2 and variant file'''
+
+from Bio import SeqIO
+
+for seq1_record in SeqIO.parse("Test1.fasta", "fasta"):
+    seq1 = seq1_record.seq
+    #print(seq1)
+
+for seq2_record in SeqIO.parse("Test2.fasta", "fasta"):
+    seq2 = seq2_record.seq
+    #print(seq2)
+##I thought I had to use .read not .parse because Biopython manual says it is good for one entry
 
 mismatch = -1
 gap = -1
 match = 1
-
-myMatrix = []
-myMatrix.append([1,3,5,7])
-myMatrix.append([2,3,4,5])
-myMatrix.append([5,10,15,20])
-def print_matrix(matrice):
-    #loop over all the rows
-    for rows in range(0, len(matrice)):
-        print("[", end = "")
-        #loop over each column in row i 
-        for col in range(0, len(matrice[rows])):
-            #Print out the value in row i and col j
-            print(matrice[rows][col], end = "")
-            #only add a tab of we're not in the last col
-            if col != len(matrice[rows]) -1:
-                print('\t', end = "")
-        print("]\n") 
-#print_matrix(myMatrix)
 
 ##Function to make a matrix of zeros
 def zeros(rows, cols):
@@ -56,7 +51,7 @@ def matchScore(match1, match2):
         return mismatch
     
 ##Function that fills out the matrix of scores
-def NeedlemanWunsch(seq1, seq2):
+def NeedlemanWunsch(seq1, seq2, gap = -1, match = 1):
     #Length of two sequence
     s1 = len(seq1) #n
     s2 = len(seq2) #m
@@ -140,9 +135,27 @@ def NeedlemanWunsch(seq1, seq2):
     alignA = alignA[::-1]
     alignB = alignB[::-1]
 
-    return alignA, alignB
-output1, output2 = NeedlemanWunsch(seq1, seq2)                                  ##Storing the outputs of seq1 and seq2 and printing the results
-print(output1 + "\n" + output2)
+    matchString = ""
+    for i in range (len(alignA)):
+        if alignA[i] == alignB[i]:
+            matchString += '|'
+        elif alignA[i] != alignB[i]:
+            if (alignA[i] == '-' or alignB == '-'):
+                matchString += " "
+            else:
+                matchString += "*"
+    alignScore = 0
+    for i in range(len(matchString)):
+        if matchString[i] == '|':
+            alignScore += 1
+        elif (matchString[i] == '*' or matchString[i] == " "):
+            alignScore += -1
+    
+    return alignA, alignB, matchString, alignScore
+output1, output2,matchString, alignScore = NeedlemanWunsch(seq1, seq2, gap = -1, match = 1)  
+##Storing the outputs of seq1 and seq2 and other variables and printing the results
+print(output1 + '\n' + matchString + '\n' + output2)
+print("Alignment Score: ", alignScore)
 
 
 
